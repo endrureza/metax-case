@@ -20,20 +20,71 @@ import supabase from "@/services/supabase/init";
 import isEmpty from "@/utils/isEmpty";
 import { useRouter } from "next/router";
 import useUser from "@/hooks/useUser";
+import strictPassword from "@/utils/strictPassword";
+import validateEmail from "@/utils/validateEmail";
 
 const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirm, setPasswordConfirm] = useState("");
   const [errorAlert, setErrorAlert] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { session } = useUser();
+  const [passwordRequirement, setPasswordRequirement] = useState({
+    length: false,
+    lower: false,
+    upper: false,
+    number: false,
+    special: false,
+  });
 
   if (session) {
     router.push("/dashboard");
   }
 
+  const validatePassword = (pass) => {
+    const result = strictPassword(pass);
+    setPasswordRequirement(result);
+  };
+
   const register = async () => {
+    if (email == "" || password == "" || passwordConfirm == "") {
+      setErrorAlert({
+        status: "error",
+        text: "Please fill in all fields",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      setErrorAlert({
+        status: "error",
+        text: "Please enter a valid email",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== passwordConfirm) {
+      setErrorAlert({
+        status: "error",
+        text: "Passwords do not match",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    if (!strictPassword(password).isValid) {
+      setErrorAlert({
+        status: "error",
+        text: "Password doesn't meet the requirements",
+      });
+      setIsLoading(false);
+      return;
+    }
+
     const { error } = await supabase().auth.signUp(
       {
         email: email,
@@ -103,7 +154,53 @@ const Signup = () => {
         <Input
           placeholder="Your Password..."
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value)
+            validatePassword(e.target.value)
+          }}
+          type="password"
+        />
+        <Flex direction="column">
+          <Text
+            fontSize="xs"
+            textColor={passwordRequirement.length ? "green.400" : "red.400"}
+            fontWeight="semibold"
+          >
+            Password should contain at least 8 characters
+          </Text>
+          <Text
+            fontSize="xs"
+            textColor={passwordRequirement.upper ? "green.400" : "red.400"}
+            fontWeight="semibold"
+          >
+            Password should contain at least one upper character
+          </Text>
+          <Text
+            fontSize="xs"
+            textColor={passwordRequirement.lower ? "green.400" : "red.400"}
+            fontWeight="semibold"
+          >
+            Password should contain at least one lower characters
+          </Text>
+          <Text
+            fontSize="xs"
+            textColor={passwordRequirement.number ? "green.400" : "red.400"}
+            fontWeight="semibold"
+          >
+            Password should contain at least one digit characters
+          </Text>
+          <Text
+            fontSize="xs"
+            textColor={passwordRequirement.special ? "green.400" : "red.400"}
+            fontWeight="semibold"
+          >
+            Password should contain at least one special characters
+          </Text>
+        </Flex>
+        <Input
+          placeholder="Confirm Password..."
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
           type="password"
         />
         <Flex>
