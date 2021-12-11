@@ -60,6 +60,12 @@ const Signin = () => {
     setIsLoading(false);
   };
 
+  const loginOauth = async (provider) => {
+    const { user, session, error } = await supabase().auth.signIn({
+      provider,
+    });
+  };
+
   return (
     <>
       <Grid
@@ -136,10 +142,20 @@ const Signin = () => {
           <Divider />
         </Flex>
         <Flex>
-          <Button colorScheme="facebook" mr={2} w="100%">
+          <Button
+            colorScheme="facebook"
+            mr={2}
+            w="100%"
+            onClick={() => loginOauth("facebook")}
+          >
             Facebook
           </Button>
-          <Button backgroundColor="blue.500" w="100%" textColor="white">
+          <Button
+            backgroundColor="blue.500"
+            w="100%"
+            textColor="white"
+            onClick={() => loginOauth("google")}
+          >
             Google
           </Button>
         </Flex>
