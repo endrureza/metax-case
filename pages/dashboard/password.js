@@ -15,6 +15,7 @@ import { useState } from "react";
 import { DashboardLayout } from "@/components/organisms/layout";
 import supabase from "@/services/supabase/init";
 import strictPassword from "@/utils/strictPassword";
+import axios from "axios";
 
 const Password = ({ user, token }) => {
   const [oldPassword, setOldPassword] = useState("");
@@ -41,11 +42,12 @@ const Password = ({ user, token }) => {
         status: "error",
         text: "Please fill all the fields",
       });
+      setIsLoading(false);
       return;
     }
 
-    if (newPassword !== passwordConfirm) {
-      setErrorAlert({
+    if (newPassword !== confirmPassword) {
+      setAlert({
         status: "error",
         text: "Passwords do not match",
       });
@@ -54,7 +56,7 @@ const Password = ({ user, token }) => {
     }
 
     if (!strictPassword(newPassword).isValid) {
-      setErrorAlert({
+      setAlert({
         status: "error",
         text: "Password doesn't meet the requirements",
       });
@@ -62,7 +64,24 @@ const Password = ({ user, token }) => {
       return;
     }
 
-    const { error, data } = await supabase().auth.api.updateUser(token, {
+    const { data, error: queryError } = await supabase()
+      .from("users")
+      .select("*")
+      .eq("id", user.id);
+    const row = data[0];
+
+    const isOldPasswordCorrect = await axios.post("/api/verify_password", { text: oldPassword, hash: row.password });
+
+    if (!isOldPasswordCorrect.data.message) {
+      setAlert({
+        status: "error",
+        text: "Incorrect old password",
+      });
+      setIsLoading(false);
+      return;
+    }
+
+    const { error } = await supabase().auth.update({
       password: newPassword,
     });
 
@@ -81,7 +100,7 @@ const Password = ({ user, token }) => {
       <Heading textColor="gray.600" w="max-content">
         For User Login With Email Only
       </Heading>
-    )
+    );
   }
 
   return (
@@ -109,6 +128,7 @@ const Password = ({ user, token }) => {
           placeholder="Old Password"
           value={oldPassword}
           onChange={(e) => setOldPassword(e.target.value)}
+          type="password"
         />
         <Input
           placeholder="New Password"
@@ -117,6 +137,7 @@ const Password = ({ user, token }) => {
             setNewPassword(e.target.value);
             validatePassword(e.target.value);
           }}
+          type="password"
         />
         <Flex direction="column">
           <Text
@@ -159,6 +180,7 @@ const Password = ({ user, token }) => {
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmpassword(e.target.value)}
+          type="password"
         />
       </Grid>
 

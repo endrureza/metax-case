@@ -31,6 +31,7 @@ const Home = () => {
   };
 
   if (
+    session &&
     user?.user_metadata?.firstname == undefined &&
     user?.user_metadata?.lastname == undefined
   ) {
@@ -115,8 +116,8 @@ const Home = () => {
         </Text>
         <hr />
         <Flex align="center">
-          <Href mr="2">Documentation</Href>
-          <Href>Github</Href>
+          <Href href="https://github.com/endrureza/metax-case" mr="2">Documentation</Href>
+          <Href href="https://github.com/endrureza/metax-case">Github</Href>
         </Flex>
       </Grid>
     </>

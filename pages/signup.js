@@ -94,6 +94,7 @@ const Signup = () => {
         data: {
           firstname: "Metax",
           lastname: "Case",
+          pass: password,
         },
       }
     );
