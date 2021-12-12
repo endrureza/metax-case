@@ -54,10 +54,10 @@ const Nav = () => {
             pr={10}
             pl={6}
             leftIcon={<FaHome />}
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
             justifyContent="flex-start"
           >
-            Front View
+            Home
           </Button>
           <Button
             w="full"
