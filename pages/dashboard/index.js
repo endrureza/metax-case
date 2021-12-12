@@ -33,7 +33,7 @@ const Dashbord = ({ user }) => {
     });
 
     if (error) {
-      setAlert(error.message);
+      setAlert({ text: error.message, status: "error" });
       return setIsLoading(false);
     }
 
@@ -51,15 +51,15 @@ const Dashbord = ({ user }) => {
 
       {alert && (
         <>
-          <Alert status="error">
+          <Alert status={alert.status}>
             <AlertIcon />
             <AlertTitle mr={2}>Whoops!</AlertTitle>
-            <AlertDescription>{alert}</AlertDescription>
+            <AlertDescription>{alert.text}</AlertDescription>
             <CloseButton
               position="absolute"
               right="8px"
               top="8px"
-              onClick={() => setAlert({})}
+              onClick={() => setAlert(null)}
             />
           </Alert>
         </>
@@ -86,6 +86,7 @@ const Dashbord = ({ user }) => {
           setIsLoading(true);
           update();
         }}
+        mr={2}
       >
         Update
       </Button>

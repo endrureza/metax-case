@@ -1,6 +1,7 @@
 import { Flex, Heading, Text, Box, Button } from "@chakra-ui/react";
 import { FaHome } from "@react-icons/all-files/fa/FaHome";
 import { FaPowerOff } from "@react-icons/all-files/fa/FaPowerOff";
+import { FaKey } from "@react-icons/all-files/fa/FaKey";
 import firstChar from "@/utils/firstChar";
 import useUser from "@/hooks/useUser";
 import { useRouter } from "next/router";
@@ -15,6 +16,8 @@ const Nav = () => {
   const logout = async () => {
     await supabase().auth.signOut();
     await axios.post("/api/signout");
+
+    localStorage.removeItem("supabase.auth.token");
 
     router.reload();
   };
@@ -47,7 +50,7 @@ const Nav = () => {
           <Button
             w="full"
             variant="ghost"
-            py={10}
+            py={6}
             pr={10}
             pl={6}
             leftIcon={<FaHome />}
@@ -55,6 +58,18 @@ const Nav = () => {
             justifyContent="flex-start"
           >
             Front View
+          </Button>
+          <Button
+            w="full"
+            variant="ghost"
+            py={6}
+            pr={10}
+            pl={6}
+            leftIcon={<FaKey />}
+            onClick={() => router.push("/dashboard/password")}
+            justifyContent="flex-start"
+          >
+            Password
           </Button>
         </Box>
         <Button

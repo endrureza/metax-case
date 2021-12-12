@@ -16,7 +16,6 @@ const AuthContext = ({ children }) => {
 
     const { data: authListener } = supabase().auth.onAuthStateChange(
       async (event, session) => {
-        console.log(event, session)
         setSession(session);
         setUser(session?.user ?? null);
 

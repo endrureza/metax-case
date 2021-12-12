@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Button,
   Divider,
@@ -50,7 +50,7 @@ const Signin = () => {
     });
 
     if (session) {
-      router.push("/dashboard");
+      location.reload();
     }
 
     if (error) {
